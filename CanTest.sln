@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33027.164
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanTest", "CanTest.csproj", "{A9C69900-FC25-4015-AFAE-F393C1DC8FCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9C69900-FC25-4015-AFAE-F393C1DC8FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C69900-FC25-4015-AFAE-F393C1DC8FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C69900-FC25-4015-AFAE-F393C1DC8FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C69900-FC25-4015-AFAE-F393C1DC8FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {485F3657-58E5-4C20-B59E-6BD6DA86EF8C}
+	EndGlobalSection
+EndGlobal

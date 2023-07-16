@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace CanTest
 {
@@ -124,69 +125,85 @@ namespace CanTest
             int length = Convert.ToInt32(txtLength.Text);
             long value = Convert.ToInt64(txtValue.Text);
 
-            int result_position;
-            int result_total_length;
-            long result_val;
             int offset = start_bit % 8;
             int align = Convert.ToInt32(txtAlign.Text);
             long mask = (int)Math.Pow((double)2, (double)length)-1;
             string resultArray = "";
 
-            result_position = start_bit / 8;
-            result_val = (value&mask) << offset;
-            result_total_length = ((result_position / 8) + 1) * 8;
+            int result_position = start_bit / 8;
+            long result_val = (value&mask) << start_bit;
+            long result_val_partial = (value & mask) << offset;
+            int result_total_length = ((result_position / 8) + 1) * 8;
 
             txtResPosition.Text = result_position.ToString();
-            if(result_val < 0x100)
-            {
-                txtResValue.Text = String.Format("0x{0:X2} ({1})", result_val, result_val);
 
-                for (int cnt = 0; cnt < result_total_length; cnt++)
-                {
-                    if ((cnt > 0) && ((cnt % align) == 0))
-                    {
-                        resultArray += "\n";
-                    }
-                    if (cnt == result_position)
-                    {
-                        resultArray += String.Format("{0,2:X2} ", result_val);
-                    }
-                    else
-                    {
-                        resultArray += "00 ";
-                    }
-                }
+            int array_len = (int)Math.Log((double)mask, 256)+1;
+            string value_array = "";
+            for (int cnt = 0; cnt < array_len; cnt++)
+            {
+                value_array += String.Format("{0,2:X2} ", (result_val_partial >> (cnt * 8)) & 0xFF);
             }
-            else
-            {
-                int array_len = (int)Math.Log((double)result_val, 16)-1;
-                string value_array = "";
-                for(int cnt=0; cnt<array_len; cnt++)
-                {
-                    value_array += String.Format("{0:X} ", (result_val>>(cnt*8))&0xFF);
-                }
-                txtResValue.Text = value_array;
+            txtResValue.Text = value_array;
 
-                for (int cnt = 0; cnt < result_total_length; cnt++)
+            for (int cnt = 0; cnt < result_total_length; cnt++)
+            {
+                if ((cnt > 0) && ((cnt % align) == 0))
                 {
-                    if ((cnt > 0) && ((cnt % align) == 0))
-                    {
-                        resultArray += "\n";
-                    }
-                    if ((cnt >= result_position) &&
-                        (cnt < result_position+ array_len))
-                    {
-                        int temp = cnt - result_position;
-                        resultArray += String.Format("{0,2:X2} ", (result_val >> (temp * 8)) & 0xFF);
-                    }
-                    else
-                    {
-                        resultArray += "00 ";
-                    }
+                    resultArray += "\n";
                 }
+
+                resultArray += String.Format("{0,2:X2} ", (result_val >> (cnt * 8)) & 0xFF);
             }
 
             rtbResultArray.Text = resultArray;
+        }
+
+        private void btnConvertValue_Click(object sender, EventArgs e)
+        {
+            if (txtRefArray.TextLength == 0)
+            {
+                return;
+            }
+            if (txtStartBit.TextLength == 0)
+            {
+                return;
+            }
+            if (txtLength.TextLength == 0)
+            {
+                return;
+            }
+            string hexValues = txtRefArray.Text;
+            string[] hexValuesSplit = hexValues.Split(' ');
+            if(hexValuesSplit.Length == 0)
+            {
+                return;
+            }
+            byte[] hexArray = new byte[hexValuesSplit.Length];
+            int index = 0;
+            foreach (String hex in hexValuesSplit)
+            {
+                // Convert the number expressed in base-16 to an integer.
+                int converted = Convert.ToInt32(hex, 16);
+                hexArray[index] = (byte)converted;
+                index++;
+            }
+
+            int start_bit = Convert.ToInt32(txtStartBit.Text);
+            int length = Convert.ToInt32(txtLength.Text);
+
+            int result_total_length = length / 8;
+            if (length % 8 > 0) { result_total_length++; }
+
+            long result_val = 0;
+            for (int cnt = 0; cnt < hexArray.Length; cnt++)
+            {
+                result_val |= (long)hexArray[ cnt] << (8 * cnt);
+            }
+
+            long mask = (int)Math.Pow((double)2, (double)length) - 1;
+            result_val = (result_val>> start_bit) & mask;
+
+            rtbResultArray.Text = result_val.ToString();
         }
 
     }
